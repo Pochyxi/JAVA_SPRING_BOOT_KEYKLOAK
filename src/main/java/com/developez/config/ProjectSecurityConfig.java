@@ -75,6 +75,7 @@ public class ProjectSecurityConfig {
                         .requestMatchers("/myAccount").hasRole("USER")
                         .requestMatchers( "/newAccount" ).hasRole( "ADMIN" )
                         .requestMatchers( "/updateAccount" ).hasRole( "ADMIN" )
+                        .requestMatchers( "/deleteAccount" ).hasRole( "ADMIN" )
 
                         .requestMatchers("/user").authenticated()
                 )

@@ -75,4 +75,17 @@ public class AccountService {
 
         return accountsRepository.save( newAccounts );
     }
+
+    public Accounts deleteAccountDetails( String email ) {
+
+            Optional<Accounts> accounts = accountsRepository.findAccountsByAccountEmail( email );
+
+            if( accounts.isEmpty() ) {
+                throw new IllegalStateException( "Account not found" );
+            }
+
+            accountsRepository.delete( accounts.get() );
+
+            return accounts.get();
+    }
 }

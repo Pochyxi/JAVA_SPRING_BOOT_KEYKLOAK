@@ -35,4 +35,10 @@ public class AccountController {
 
         return new ResponseEntity<>( accountService.modifyAccountDetails( accounts ), HttpStatus.OK );
     }
+
+    @DeleteMapping ("/deleteAccount")
+    public ResponseEntity<?> deleteAccountDetails( @RequestParam String email ) {
+
+        return new ResponseEntity<>( accountService.deleteAccountDetails( email ), HttpStatus.OK );
+    }
 }
