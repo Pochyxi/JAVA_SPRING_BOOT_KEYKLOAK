@@ -72,10 +72,10 @@ public class ProjectSecurityConfig {
                 // Configura l'autorizzazione delle richieste
                 .authorizeHttpRequests( ( requests ) -> requests
 
-                        .requestMatchers("/myAccount").hasRole("USER")
-                        .requestMatchers( "/newAccount" ).hasRole( "ADMIN" )
-                        .requestMatchers( "/updateAccount" ).hasRole( "ADMIN" )
-                        .requestMatchers( "/deleteAccount" ).hasRole( "ADMIN" )
+                        .requestMatchers("/myAccount").hasAnyRole( "USER", "ADMIN" )
+                        .requestMatchers( "/newAccount" ).hasAnyRole( "USER", "ADMIN" )
+                        .requestMatchers( "/updateAccount" ).hasAnyRole( "USER", "ADMIN" )
+                        .requestMatchers( "/deleteAccount" ).hasAnyRole( "USER", "ADMIN" )
 
                         .requestMatchers("/user").authenticated()
                 )
