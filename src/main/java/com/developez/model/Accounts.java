@@ -1,9 +1,12 @@
 package com.developez.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -15,19 +18,25 @@ import java.time.LocalDate;
 public class Accounts {
 
     @Id
-    @Column(name="account_email")
+    @Column(name="account_email", nullable = false)
     private String accountEmail;
 
-    @Column(name="first_name")
+    @Column(name="first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @Column(name = "telephone_number")
     private String telephoneNumber;
 
-    @Column(name = "create_dt")
+    @Column(name = "create_dt", nullable = false)
     private LocalDate createDt;
+
+
+    @OneToMany(mappedBy = "accountsOwner", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonBackReference
+    private List<Teams> teams;
 
 }

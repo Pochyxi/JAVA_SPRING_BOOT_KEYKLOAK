@@ -77,6 +77,10 @@ public class ProjectSecurityConfig {
                         .requestMatchers( "/updateAccount" ).hasAnyRole( "USER", "ADMIN" )
                         .requestMatchers( "/deleteAccount" ).hasAnyRole( "USER", "ADMIN" )
 
+                        .requestMatchers( "/newTeams" ).hasAnyRole( "USER", "ADMIN" )
+
+                        .requestMatchers( "/newCard" ).hasAnyRole( "USER", "ADMIN" )
+
                         .requestMatchers("/user").authenticated()
                 )
                 // Configura la gestione del login tramite form oauth2
