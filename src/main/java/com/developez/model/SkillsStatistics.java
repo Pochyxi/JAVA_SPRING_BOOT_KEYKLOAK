@@ -1,5 +1,6 @@
 package com.developez.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,4 +23,9 @@ public class SkillsStatistics {
     private Integer dribbling;
     private Integer defence;
     private Integer physical;
+
+    @OneToOne(mappedBy = "skillsStatistics", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private Card card;
+
 }

@@ -6,6 +6,8 @@ import com.developez.repository.AccountsRepository;
 import com.developez.repository.TeamsRepository;
 import com.developez.requestModels.NewTeamRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,7 +24,7 @@ public class TeamsService {
         this.accountsRepository = accountsRepository;
     }
 
-    public Teams saveTeamDetails( NewTeamRequest teams ) {
+    public ResponseEntity<?> saveTeamDetails(NewTeamRequest teams ) {
 
         Optional<Accounts> accounts = accountsRepository.findAccountsByAccountEmail( teams.getOwnerEmail() );
         Teams newTeams = new Teams();
@@ -30,11 +32,9 @@ public class TeamsService {
         if( accounts.isPresent() ) {
             newTeams.setTeamName( teams.getTeamName() );
             newTeams.setAccountsOwner( accounts.get() );
-            teamsRepository.save( newTeams );
+            return new ResponseEntity<>(teamsRepository.save( newTeams ), HttpStatus.OK);
         } else {
-            newTeams = null;
+            return new ResponseEntity<>( "Account non trovato", HttpStatus.NOT_FOUND);
         }
-
-        return newTeams;
     }
 }

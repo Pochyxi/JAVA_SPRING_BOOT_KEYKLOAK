@@ -72,16 +72,11 @@ public class ProjectSecurityConfig {
                 // Configura l'autorizzazione delle richieste
                 .authorizeHttpRequests( ( requests ) -> requests
 
-                        .requestMatchers("/myAccount").hasAnyRole( "USER", "ADMIN" )
-                        .requestMatchers( "/newAccount" ).hasAnyRole( "USER", "ADMIN" )
-                        .requestMatchers( "/updateAccount" ).hasAnyRole( "USER", "ADMIN" )
-                        .requestMatchers( "/deleteAccount" ).hasAnyRole( "USER", "ADMIN" )
+                        .requestMatchers("/api/v1/accounts").authenticated()
 
-                        .requestMatchers( "/newTeams" ).hasAnyRole( "USER", "ADMIN" )
+                        .requestMatchers( "/api/v1/teams" ).authenticated()
 
-                        .requestMatchers( "/newCard" ).hasAnyRole( "USER", "ADMIN" )
-
-                        .requestMatchers("/user").authenticated()
+                        .requestMatchers( "/api/v1/card" ).authenticated()
                 )
                 // Configura la gestione del login tramite form oauth2
                 .oauth2ResourceServer( ( oauth2RS ) -> oauth2RS

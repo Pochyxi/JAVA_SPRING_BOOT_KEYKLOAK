@@ -5,9 +5,11 @@ import com.developez.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/v1/accounts")
 public class AccountController {
 
     private final AccountService accountService;
@@ -17,26 +19,29 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/myAccount")
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<?> getAccountDetails(@RequestParam String email) {
 
 
         return new ResponseEntity<>(accountService.getAccountDetails( email ), HttpStatus.OK);
     }
 
-    @PostMapping ("/newAccount")
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<?> saveAccountDetails( @RequestBody Accounts accounts ) {
 
         return new ResponseEntity<>( accountService.saveAccountDetails( accounts ), HttpStatus.OK );
     }
 
-    @PutMapping ("/updateAccount")
+    @PutMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<?> updateAccountDetails( @RequestBody Accounts accounts ) {
 
         return new ResponseEntity<>( accountService.modifyAccountDetails( accounts ), HttpStatus.OK );
     }
 
-    @DeleteMapping ("/deleteAccount")
+    @DeleteMapping
     public ResponseEntity<?> deleteAccountDetails( @RequestParam String email ) {
 
         return new ResponseEntity<>( accountService.deleteAccountDetails( email ), HttpStatus.OK );
