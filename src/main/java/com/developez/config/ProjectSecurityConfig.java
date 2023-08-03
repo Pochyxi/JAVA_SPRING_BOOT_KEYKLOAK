@@ -42,7 +42,7 @@ public class ProjectSecurityConfig {
                             // Crea una nuova configurazione CORS
                             CorsConfiguration corsConfiguration = new CorsConfiguration();
                             // Consente le richieste da "http://localhost:4200"
-                            corsConfiguration.setAllowedOrigins( List.of( "http://localhost:5173" ) );
+                            corsConfiguration.setAllowedOrigins( List.of( "http://127.0.0.1:5173/", "http://localhost:5173/" ) );
                             // Consente tutti i metodi HTTP
                             corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD",
                                     "OPTIONS"));

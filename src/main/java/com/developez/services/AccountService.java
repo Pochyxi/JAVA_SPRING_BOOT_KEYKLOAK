@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AccountService {
@@ -39,10 +37,10 @@ public class AccountService {
         String emailOfUserRequest = getClaims().get( "email" ).toString();
         ResponseEntity<?> responseEntity = null;
         Map<String, Object> resultObject = new HashMap<>();
+        Collection<SimpleGrantedAuthority> authorities = ( Collection<SimpleGrantedAuthority> )
+                SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 
-        System.out.println( emailOfUserRequest );
-
-        if( !emailOfUserRequest.equals( email ) ) {
+        if( !emailOfUserRequest.equals( email ) && authorities.stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN")) ) {
             responseEntity = new ResponseEntity<>(
                     errorMessage,
                     HttpStatus.FORBIDDEN );
@@ -58,94 +56,60 @@ public class AccountService {
     }
 
 
-    public ResponseEntity<?> getAccountDetails( @RequestParam String email ) {
 
-        Map<String, Object> checkingObjectResult = checkWithClaim( getClaims(), email, "Nono sei autorizzato ad " +
-                "accedere alle informazioni di questo account" );
+    // GET
+    public Accounts GET_Accounts( @RequestParam String email ) {
 
-        if( checkingObjectResult.get( "result" ).equals( "ko" ) ) {
-            return ( ResponseEntity<?> ) checkingObjectResult.get( "responseEntity" );
-        }
-
-        Optional<Accounts> accounts = accountsRepository.findAccountsByAccountEmail( email );
-
-        if( accounts.isEmpty() ) {
-            Accounts newAccount = Accounts.builder()
-                    .accountEmail( ( String ) getClaims().get( "email" ) )
-                    .firstName( ( String ) getClaims().get( "given_name" ) )
-                    .lastName( ( String ) getClaims().get( "family_name" ) )
-                    .createDt( LocalDate.now() )
-                    .build();
-
-            saveAccountDetails( newAccount );
-
-            return new ResponseEntity<>( newAccount, HttpStatus.OK );
-        }
-
-
-        return new ResponseEntity<>( accounts, HttpStatus.OK );
+        // se l'account esiste, lo ritorna, invece se non esiste ritorna null e lo gestisco nel controller
+      return accountsRepository.findAccountsByAccountEmail( email ).orElse( null );
     }
 
-    public ResponseEntity<?> saveAccountDetails( @RequestBody Accounts accounts ) {
+    // POST
+    public Accounts POST_Accounts( @RequestBody Accounts accounts ) {
 
+        // verifico se l'account che si vuole creare risulta esistente
         Accounts accountFound = accountsRepository.findAccountsByAccountEmail( accounts.getAccountEmail() ).orElse( null );
 
-        if( accountFound != null ) {
-            return new ResponseEntity<>( accountFound, HttpStatus.BAD_REQUEST );
+        // se non è esistente, lo aggiungo
+        if( accountFound == null ) {
+            accounts.setCreateDt( LocalDate.now() );
+            return accountsRepository.save( accounts );
+        } else {
+            // se è presente un account con questa email, ritorno null e lo gestisco nel controller
+            return null;
         }
-
-        Map<String, Object> checkingObjectResult = checkWithClaim( getClaims(), accounts.getAccountEmail(), "Nono sei" +
-                " autorizzato a creare un account con questa email" );
-
-        if( checkingObjectResult.get( "result" ).equals( "ko" ) ) {
-            return ( ResponseEntity<?> ) checkingObjectResult.get( "responseEntity" );
-        }
-
-        accounts.setCreateDt( LocalDate.now() );
-
-        return new ResponseEntity<>( accountsRepository.save( accounts ), HttpStatus.OK );
     }
 
-    public ResponseEntity<?> modifyAccountDetails( @RequestBody Accounts accounts ) {
-        Map<String, Object> checkingObjectResult = checkWithClaim( getClaims(), accounts.getAccountEmail(), "Nono sei" +
-                " autorizzato a modificare un account con questa email" );
+    public Accounts PUT_Accounts( @RequestBody Accounts accounts ) {
 
-        if( checkingObjectResult.get( "result" ).equals( "ko" ) ) {
-            return ( ResponseEntity<?> ) checkingObjectResult.get( "responseEntity" );
+        Accounts accountFounded =
+                accountsRepository.findAccountsByAccountEmail( accounts.getAccountEmail() ).orElse( null );
+
+        if( accountFounded == null ) {
+            return null;
+        } else {
+            Accounts modifiedAccounts = Accounts.builder()
+                    .accountEmail( accountFounded.getAccountEmail() )
+                    .firstName( accounts.getFirstName() == null ? accountFounded.getFirstName() : accounts.getFirstName() )
+                    .lastName( accounts.getLastName() == null ? accountFounded.getLastName() : accounts.getLastName() )
+                    .telephoneNumber( accounts.getTelephoneNumber() == null ? accountFounded.getTelephoneNumber() :
+                            accounts.getTelephoneNumber() )
+                    .createDt( accountFounded.getCreateDt() )
+                    .build();
+
+            return accountsRepository.save( modifiedAccounts );
         }
-
-        Accounts accountFounded = accountsRepository.findAccountsByAccountEmail( accounts.getAccountEmail() ).orElseThrow( () -> new IllegalStateException( "Account not found" ) );
-
-        Accounts newAccounts = Accounts.builder()
-                .accountEmail( accountFounded.getAccountEmail() )
-                .firstName( accounts.getFirstName() == null ? accountFounded.getFirstName() : accounts.getFirstName() )
-                .lastName( accounts.getLastName() == null ? accountFounded.getLastName() : accounts.getLastName() )
-                .telephoneNumber( accounts.getTelephoneNumber() == null ? accountFounded.getTelephoneNumber() :
-                        accounts.getTelephoneNumber() )
-                .createDt( accountFounded.getCreateDt() )
-                .build();
-
-        return new ResponseEntity<>( accountsRepository.save( newAccounts ), HttpStatus.OK );
     }
 
     @Transactional
-    public ResponseEntity<?> deleteAccountDetails( String email ) {
-        Map<String, Object> checkingObjectResult = checkWithClaim( getClaims(), email, "Nono sei" +
-                " autorizzato a eliminare un account con questa email" );
+    public Accounts DELETE_Accounts( String email ) {
+        Accounts accounts = accountsRepository.findAccountsByAccountEmail( email ).orElse( null);
 
-        if( checkingObjectResult.get( "result" ).equals( "ko" ) ) {
-            return ( ResponseEntity<?> ) checkingObjectResult.get( "responseEntity" );
+        if( accounts == null ) {
+            return null;
+        } else {
+            accountsRepository.deleteAccountsByAccountEmail( email );
+            return accounts;
         }
-
-
-        Optional<Accounts> accounts = accountsRepository.findAccountsByAccountEmail( email );
-
-        if( accounts.isEmpty() ) {
-            throw new IllegalStateException( "Account not found" );
-        }
-
-        accountsRepository.deleteAccountsByAccountEmail( email );
-
-        return new ResponseEntity<>( accounts.get(), HttpStatus.OK );
     }
 }

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,30 +22,53 @@ public class AccountController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("#email == authentication.principal.claims.get('preferred_username') or hasRole('ADMIN')")
     public ResponseEntity<?> getAccountDetails(@RequestParam String email) {
+        Accounts accounts = accountService.GET_Accounts( email );
 
-
-        return new ResponseEntity<>(accountService.getAccountDetails( email ), HttpStatus.OK);
+        if( accounts != null ) {
+            return new ResponseEntity<>( accounts, HttpStatus.OK );
+        } else {
+            return new ResponseEntity<>( "Nessun account trovato con questa email", HttpStatus.NOT_FOUND );
+        }
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("#accounts.accountEmail == authentication.principal.claims.get('preferred_username') or hasRole('ADMIN')")
     public ResponseEntity<?> saveAccountDetails( @RequestBody Accounts accounts ) {
 
-        return new ResponseEntity<>( accountService.saveAccountDetails( accounts ), HttpStatus.OK );
+        Accounts accountsSaved = accountService.POST_Accounts( accounts );
+
+        if( accountsSaved != null ) {
+            return new ResponseEntity<>( accountsSaved, HttpStatus.OK );
+        } else {
+            return new ResponseEntity<>( "Account già esistente per questa email", HttpStatus.BAD_REQUEST );
+        }
     }
 
     @PutMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("#accounts.accountEmail == authentication.principal.claims.get('preferred_username') or hasRole('ADMIN')")
     public ResponseEntity<?> updateAccountDetails( @RequestBody Accounts accounts ) {
 
-        return new ResponseEntity<>( accountService.modifyAccountDetails( accounts ), HttpStatus.OK );
+        Accounts accountsModified = accountService.PUT_Accounts( accounts );
+
+        if( accountsModified == null ) {
+            return new ResponseEntity<>( "Nessun account trovato con questa email", HttpStatus.NOT_FOUND );
+        } else {
+            return new ResponseEntity<>( accountsModified, HttpStatus.OK );
+        }
     }
 
     @DeleteMapping
+    @PreAuthorize("#email == authentication.principal.claims.get('preferred_username') or hasRole('ADMIN')")
     public ResponseEntity<?> deleteAccountDetails( @RequestParam String email ) {
 
-        return new ResponseEntity<>( accountService.deleteAccountDetails( email ), HttpStatus.OK );
+        Accounts accountDeleted = accountService.DELETE_Accounts( email );
+
+        if( accountDeleted == null ) {
+            return new ResponseEntity<>( "Nessun account trovato con questa email", HttpStatus.NOT_FOUND );
+        } else {
+            return new ResponseEntity<>( accountDeleted, HttpStatus.OK );
+        }
     }
 }
