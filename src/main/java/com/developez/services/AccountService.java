@@ -65,7 +65,7 @@ public class AccountService {
     }
 
     // POST
-    public Accounts POST_Accounts( @RequestBody Accounts accounts ) {
+    public Accounts POST_Accounts( Accounts accounts ) {
 
         // verifico se l'account che si vuole creare risulta esistente
         Accounts accountFound = accountsRepository.findAccountsByAccountEmail( accounts.getAccountEmail() ).orElse( null );
@@ -80,7 +80,7 @@ public class AccountService {
         }
     }
 
-    public Accounts PUT_Accounts( @RequestBody Accounts accounts ) {
+    public Accounts PUT_Accounts(Accounts accounts ) {
 
         Accounts accountFounded =
                 accountsRepository.findAccountsByAccountEmail( accounts.getAccountEmail() ).orElse( null );

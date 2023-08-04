@@ -29,7 +29,7 @@ public class AccountController {
         if( accounts != null ) {
             return new ResponseEntity<>( accounts, HttpStatus.OK );
         } else {
-            return new ResponseEntity<>( "Nessun account trovato con questa email", HttpStatus.NOT_FOUND );
+            return new ResponseEntity<>( "Nessun account trovato con questa email", HttpStatus.OK );
         }
     }
 

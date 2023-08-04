@@ -77,6 +77,8 @@ public class ProjectSecurityConfig {
                         .requestMatchers( "/api/v1/teams" ).authenticated()
 
                         .requestMatchers( "/api/v1/card" ).authenticated()
+
+                        .requestMatchers( "/api/v1/skillsStatistics" ).authenticated()
                 )
                 // Configura la gestione del login tramite form oauth2
                 .oauth2ResourceServer( ( oauth2RS ) -> oauth2RS

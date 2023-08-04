@@ -19,8 +19,7 @@ public class Teams {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "accounts_owner_email", nullable = false)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
     private Accounts accountsOwner;
 
     @Column(name="team_name", nullable = false)

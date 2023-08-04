@@ -6,12 +6,15 @@ import com.developez.model.Teams;
 import com.developez.repository.CardRepository;
 import com.developez.repository.SkillsStatisticsRepository;
 import com.developez.repository.TeamsRepository;
-import com.developez.requestModels.NewCardRequest;
+import com.developez.requestModels.POST.POSTCardRequest;
+import com.developez.requestModels.PUT.PUTCardRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,34 +32,77 @@ public class CardService {
         this.skillsStatisticsRepository = skillsStatisticsRepository;
     }
 
-    public ResponseEntity<?> saveCardDetails(NewCardRequest card ) {
+    public List<Card> GET_Card( String email ) {
+        List<Card> cards = cardRepository.findCardByTeams_AccountsOwner_AccountEmail(email);
+
+        if( cards.size() > 0 ) {
+            return cards;
+        } else {
+            return null;
+        }
+    }
+
+    public Card POST_Card( POSTCardRequest card ) {
 
         Optional<Teams> teams = teamsRepository.findById( card.getTeamsId() );
 
-        SkillsStatistics skillsStatistics = SkillsStatistics.builder()
-                .velocity( 50 )
-                .shoot( 50 )
-                .pass( 50 )
-                .dribbling( 50 )
-                .defence( 50 )
-                .physical( 50 )
-                .build();
-
-        SkillsStatistics skillSaved = skillsStatisticsRepository.save( skillsStatistics );
-
         if( teams.isPresent() ) {
-            Card newCard = new Card();
-            newCard.setName( card.getName() );
-            newCard.setSurname( card.getSurname() );
-            newCard.setTeams( teams.get() );
-            newCard.setSkillsStatistics( skillSaved );
+            SkillsStatistics skillsStatistics = SkillsStatistics.builder()
+                    .velocity( 50 )
+                    .shoot( 50 )
+                    .pass( 50 )
+                    .dribbling( 50 )
+                    .defence( 50 )
+                    .physical( 50 )
+                    .build();
 
-            Card cardSaved = cardRepository.save( newCard );
+            SkillsStatistics skillSaved = skillsStatisticsRepository.save( skillsStatistics );
 
-            return ResponseEntity.ok( cardSaved );
+            Card newCard = Card.builder()
+                    .name( card.getName() )
+                    .surname( card.getSurname() )
+                    .teams( teams.get() )
+                    .accountEmail( card.getAccountEmail() == null ? teams.get().getAccountsOwner().getAccountEmail()
+                            : card.getAccountEmail() )
+                    .skillsStatistics( skillSaved )
+                    .build();
+
+            return cardRepository.save( newCard );
         } else {
-            return new ResponseEntity<>( "Team non trovato", HttpStatus.NOT_FOUND);
+            return null;
         }
+    }
 
+    public Card PUT_Card( PUTCardRequest card ) {
+        SkillsStatistics skillsStatistics = skillsStatisticsRepository.findById( card.getSkillStatisticsId() ).orElse( null );
+
+        if( skillsStatistics != null ) {
+            Card cardToUpdate = cardRepository.findById( card.getCardId() ).orElse( null );
+
+            if( cardToUpdate != null ) {
+                cardToUpdate.setName( card.getName() == null ? cardToUpdate.getName() : card.getName() );
+                cardToUpdate.setSurname( card.getSurname() == null ? cardToUpdate.getSurname() : card.getSurname() );
+                cardToUpdate.setAccountEmail( card.getAccountEmail() == null ? cardToUpdate.getAccountEmail() : card.getAccountEmail() );
+                cardToUpdate.setSkillsStatistics( card.getSkillStatisticsId() == null ? cardToUpdate.getSkillsStatistics() : skillsStatistics );
+
+                return cardRepository.save( cardToUpdate );
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @Transactional
+    public Card DELETE_Card( Integer cardId, String email ) {
+        Card cardToDelete = cardRepository.findById( cardId ).orElse( null );
+
+        if( cardToDelete != null ) {
+            cardRepository.deleteCardByIdAndTeams_AccountsOwner_AccountEmail( cardId, email );
+            return cardToDelete;
+        } else {
+            return null;
+        }
     }
 }

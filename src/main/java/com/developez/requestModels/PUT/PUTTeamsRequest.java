@@ -1,4 +1,4 @@
-package com.developez.requestModels;
+package com.developez.requestModels.PUT;
 
 import lombok.*;
 
@@ -8,7 +8,8 @@ import lombok.*;
 @ToString
 @Builder
 @AllArgsConstructor
-public class NewTeamRequest {
+public class PUTTeamsRequest {
     private String ownerEmail;
+    private Integer teamsId;
     private String teamName;
 }
