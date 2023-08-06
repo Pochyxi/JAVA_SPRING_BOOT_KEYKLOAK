@@ -10,5 +10,5 @@ public interface TeamsRepository extends JpaRepository<Teams, Integer> {
 
     List<Teams> findTeamsByAccountsOwner_AccountEmail( String email);
 
-    void deleteTeamsByIdAndAccountsOwner_AccountEmail( Integer id, String email );
+    Optional<Teams> findTeamsByIdAndAccountsOwner_AccountEmail( Integer id, String email);
 }

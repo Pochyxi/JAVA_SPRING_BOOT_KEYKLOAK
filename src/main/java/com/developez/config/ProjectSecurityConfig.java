@@ -74,6 +74,7 @@ public class ProjectSecurityConfig {
 
                         .requestMatchers("/api/v1/accounts").authenticated()
 
+                        .requestMatchers( "/api/v1/teams/*" ).authenticated()
                         .requestMatchers( "/api/v1/teams" ).authenticated()
 
                         .requestMatchers( "/api/v1/card" ).authenticated()

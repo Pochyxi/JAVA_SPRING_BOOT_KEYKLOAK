@@ -35,6 +35,12 @@ public class TeamsService {
         }
     }
 
+    public Teams GET_SINGLE_Teams( Integer id, String email ) {
+        Optional<Teams> teams = teamsRepository.findTeamsByIdAndAccountsOwner_AccountEmail( id, email );
+
+        return teams.orElse( null );
+    }
+
     public Teams POST_Teams( POSTTeamRequest teams ) {
         Optional<Accounts> accounts = accountsRepository.findAccountsByAccountEmail( teams.getOwnerEmail() );
 

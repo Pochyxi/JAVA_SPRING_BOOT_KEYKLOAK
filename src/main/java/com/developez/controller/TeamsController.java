@@ -24,6 +24,19 @@ public class TeamsController {
         this.teamsService = teamsService;
     }
 
+
+    @GetMapping("/{id}")
+    @PreAuthorize("#email == authentication.principal.claims.get('preferred_username') or hasRole('ADMIN')")
+    public ResponseEntity<?> getSingleTeam(@PathVariable Integer id, @RequestParam String email) {
+        Teams team = teamsService.GET_SINGLE_Teams( id, email );
+
+        if( team != null ) {
+            return new ResponseEntity<>( team, HttpStatus.OK );
+        } else {
+            return new ResponseEntity<>( "Nessun team trovato con questa email", HttpStatus.NOT_FOUND );
+        }
+    }
+
     @GetMapping
     @PreAuthorize("#ownerEmail == authentication.principal.claims.get('preferred_username') or hasRole('ADMIN')")
     public ResponseEntity<?> getTeams(@RequestParam String ownerEmail) {
