@@ -40,13 +40,8 @@ public class TeamsController {
     @GetMapping
     @PreAuthorize("#ownerEmail == authentication.principal.claims.get('preferred_username') or hasRole('ADMIN')")
     public ResponseEntity<?> getTeams(@RequestParam String ownerEmail) {
-        List<Teams> teams = teamsService.GET_Teams( ownerEmail );
 
-        if( teams != null ) {
-            return new ResponseEntity<>( teams, HttpStatus.OK );
-        } else {
-            return new ResponseEntity<>( "Nessun team trovato con questa email", HttpStatus.NOT_FOUND );
-        }
+        return new ResponseEntity<>( teamsService.GET_Teams( ownerEmail ), HttpStatus.OK );
     }
 
     @PostMapping

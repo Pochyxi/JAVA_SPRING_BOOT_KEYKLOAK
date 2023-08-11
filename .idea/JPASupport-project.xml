@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoGeneratorSettingsState">
+    <option name="moduleName" value="JAVA_SPRINGBOOT_KEYCLOAK" />
+    <option name="moduleNameToSettings">
+      <map>
+        <entry key="JAVA_SPRINGBOOT_KEYCLOAK">
+          <value>
+            <ModuleSettings />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="DatabaseSettingsState">
+    <option name="language" value="it-IT" />
+  </component>
+</project>

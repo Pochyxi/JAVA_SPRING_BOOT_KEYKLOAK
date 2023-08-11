@@ -1,5 +1,7 @@
 package com.developez.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,8 +27,9 @@ public class Card {
 
     private String accountEmail;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "skills_statistics_id")
+    @JsonManagedReference
     private SkillsStatistics skillsStatistics;
 
 }

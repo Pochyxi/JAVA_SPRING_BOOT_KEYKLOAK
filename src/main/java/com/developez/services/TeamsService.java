@@ -28,11 +28,7 @@ public class TeamsService {
     public List<Teams> GET_Teams(String email ) {
         List<Teams> teams = teamsRepository.findTeamsByAccountsOwner_AccountEmail( email );
 
-        if( teams.isEmpty() ) {
-            return null;
-        } else {
-            return teams;
-        }
+        return teams;
     }
 
     public Teams GET_SINGLE_Teams( Integer id, String email ) {

@@ -40,6 +40,7 @@ public class CardService {
         }
     }
 
+    @Transactional
     public Card POST_Card( POSTCardRequest card ) {
 
         Optional<Teams> teams = teamsRepository.findById( card.getTeamsId() );
@@ -54,16 +55,16 @@ public class CardService {
                     .physical( 50 )
                     .build();
 
-            SkillsStatistics skillSaved = skillsStatisticsRepository.save( skillsStatistics );
-
             Card newCard = Card.builder()
                     .name( card.getName() )
                     .surname( card.getSurname() )
                     .teams( teams.get() )
                     .accountEmail( card.getAccountEmail() == null ? teams.get().getAccountsOwner().getAccountEmail()
                             : card.getAccountEmail() )
-                    .skillsStatistics( skillSaved )
+                    .skillsStatistics( skillsStatistics )
                     .build();
+
+            skillsStatistics.setCard( newCard );
 
             return cardRepository.save( newCard );
         } else {
