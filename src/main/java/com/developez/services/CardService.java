@@ -30,14 +30,9 @@ public class CardService {
         this.skillsStatisticsRepository = skillsStatisticsRepository;
     }
 
-    public List<Card> GET_Card( String email ) {
-        List<Card> cards = cardRepository.findCardByTeams_AccountsOwner_AccountEmail(email);
+    public List<Card> GET_Card( String email, Integer id) {
 
-        if( cards.size() > 0 ) {
-            return cards;
-        } else {
-            return null;
-        }
+        return cardRepository.findCardsByTeams_IdAndTeams_AccountsOwner_AccountEmail(id, email);
     }
 
     @Transactional

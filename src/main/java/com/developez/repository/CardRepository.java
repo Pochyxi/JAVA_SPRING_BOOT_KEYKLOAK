@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Integer> {
 
-    List<Card> findCardByTeams_AccountsOwner_AccountEmail( String email);
+    List<Card> findCardsByTeams_IdAndTeams_AccountsOwner_AccountEmail(Integer id, String email);
 
     void deleteCardByIdAndTeams_AccountsOwner_AccountEmail( Integer cardId, String email);
 }

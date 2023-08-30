@@ -25,6 +25,8 @@ public class SkillsStatistics {
     private Integer defence;
     private Integer physical;
 
+    private Integer overall;
+
     @OneToOne(mappedBy = "skillsStatistics")
     @JsonBackReference
     private Card card;

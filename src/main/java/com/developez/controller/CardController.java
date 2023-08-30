@@ -26,14 +26,10 @@ public class CardController {
 
     @GetMapping
     @PreAuthorize( "#email == authentication.principal.claims.get('preferred_username') or hasRole('ADMIN')" )
-    public ResponseEntity<?> GET_Cards( @RequestParam String email ) {
-        List<Card> card = cardService.GET_Card( email );
+    public ResponseEntity<?> GET_Cards( @RequestParam String email,  @RequestParam Integer id ) {
+        List<Card> card = cardService.GET_Card( email, id );
 
-        if( card != null ) {
-            return new ResponseEntity<>( card, HttpStatus.OK );
-        } else {
-            return new ResponseEntity<>( "Carte Non trovate", HttpStatus.NOT_FOUND );
-        }
+        return new ResponseEntity<>( card, HttpStatus.OK );
     }
 
     @PostMapping

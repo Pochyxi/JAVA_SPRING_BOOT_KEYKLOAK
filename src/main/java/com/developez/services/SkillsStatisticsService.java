@@ -35,6 +35,17 @@ public class SkillsStatisticsService {
             updatedSkillsStatistic.setPhysical( skillsStatistic.getPhysical() == null ? updatedSkillsStatistic.getPhysical() : skillsStatistic.getPhysical() );
             updatedSkillsStatistic.setCard( updatedSkillsStatistic.getCard() );
 
+            int sommaStatistiche = updatedSkillsStatistic.getVelocity() +
+                    updatedSkillsStatistic.getShoot() +
+                    updatedSkillsStatistic.getPass() +
+                    updatedSkillsStatistic.getDribbling() +
+                    updatedSkillsStatistic.getDefence() +
+                    updatedSkillsStatistic.getPhysical();
+
+            Integer overall = sommaStatistiche / 6;
+
+            updatedSkillsStatistic.setOverall( overall );
+
             return skillsStatisticsRepository.save( updatedSkillsStatistic );
         } else {
             return null;
